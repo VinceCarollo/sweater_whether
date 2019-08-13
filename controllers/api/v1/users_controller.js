@@ -2,10 +2,10 @@ const bcrypt = require('bcrypt');
 const saltRounds = 10;
 const { check, validationResult } = require('express-validator');
 const uuidv4 = require('uuid/v4');
-var User = require('../../../../models').User;
+var User = require('../../../models').User;
 
-module.exports = function (req, res, next) {
-  const errors = validationResult(req)
+const createUser = function (req, res, next) {
+  let errors = validationResult(req)
   if (req.body.password != req.body.password_confirmation) {
     return res.status(500).json({ errors: 'passwords do not match' })
   } else if (!errors.isEmpty()) {
@@ -28,3 +28,7 @@ module.exports = function (req, res, next) {
     })
   });
 };
+
+module.exports = {
+  create: createUser
+}
