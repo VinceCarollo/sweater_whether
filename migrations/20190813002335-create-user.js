@@ -17,6 +17,9 @@ module.exports = {
       isAdmin: {
         type: Sequelize.BOOLEAN
       },
+      api_key: {
+        type: Sequelize.STRING
+      },
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE

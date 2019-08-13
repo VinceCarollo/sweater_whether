@@ -3,7 +3,8 @@ module.exports = (sequelize, DataTypes) => {
   const User = sequelize.define('User', {
     email: DataTypes.STRING,
     password: DataTypes.STRING,
-    isAdmin: DataTypes.BOOLEAN
+    isAdmin: DataTypes.BOOLEAN,
+    api_key: DataTypes.STRING
   }, {});
   User.associate = function(models) {
     // associations can be defined here
