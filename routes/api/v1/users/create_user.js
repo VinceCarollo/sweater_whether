@@ -1,8 +1,15 @@
 const bcrypt = require('bcrypt');
 const saltRounds = 10;
+const { check, validationResult } = require('express-validator');
 var User = require('../../../../models').User;
 
 module.exports = function (req, res, next) {
+  const errors = validationResult(req)
+  if (!errors.isEmpty()) {
+    return res.status(422).json({ errors: errors.array() })
+  } else if (req.body.password != req.body.password_confirmation) {
+    return res.status(422).json({ errors: 'passwords do not match' })
+  }
   bcrypt.hash(req.body.password, saltRounds, function(err, hash) {
     User.create({
       email: req.body.email,
