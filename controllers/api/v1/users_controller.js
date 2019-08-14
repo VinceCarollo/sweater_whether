@@ -1,7 +1,7 @@
-const bcrypt = require('bcrypt');
-const saltRounds = 10;
-const { check, validationResult } = require('express-validator');
-const uuidv4 = require('uuid/v4');
+var bcrypt = require('bcrypt');
+var saltRounds = 10;
+var { check, validationResult } = require('express-validator');
+var uuidv4 = require('uuid/v4');
 var User = require('../../../models').User;
 
 const createUser = function (req, res, next) {
