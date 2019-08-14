@@ -1,5 +1,6 @@
 var User = require('../../../models').User;
-var https = require('https');
+var googleService = require('../../../services/google_service.js')
+var fetch = require('node-fetch');
 
 var forecastIndex = function(req, res, next) {
   User.findOne({
@@ -8,25 +9,39 @@ var forecastIndex = function(req, res, next) {
     }
   })
   .then(user => {
-    let lat = '';
-    let lng = '';
     if (user) {
-      https.get(`https://maps.googleapis.com/maps/api/geocode/json?address=denver,co&key=${process.env.GOOGLE_API_KEY}`, (resp) => {
-        let data = '';
-
-        resp.on('data', (chunk) => {
-          data += chunk;
-        });
-
-        resp.on('end', () => {
-          lat = JSON.parse(data).results[0].geometry.location.lat
-          lng = JSON.parse(data).results[0].geometry.location.lng
-          console.log(lat)
-          console.log(lng)
-        });
-      }).on("error", (err) => {
-        console.log("Error: " + err.message);
-      });
+      let location = googleService.location(req.query.location)
+      location.then(data => {
+        let lat = data.results[0].geometry.location.lat
+        let lng = data.results[0].geometry.location.lng
+        fetch(`https://api.darksky.net/forecast/1b6460a7498ac4cf844e0973f91d9184/${lat},${lng}`)
+          .then(res => res.json())
+          .then(data => {
+            res.setHeader("Content-Type", "application/json");
+            res.status(200).send({
+              location: req.query.location,
+              currently: {
+                summary: data.currently.summary,
+                icon: data.currently.icon,
+                precipIntensity: data.currently.precipIntensity,
+                precipProbability: data.currently.precipProbability,
+                temperature: data.currently.temperature,
+                humidity: data.currently.humidity,
+                pressure: data.currently.pressure,
+                windSpeed: data.currently.windSpeed,
+                windGust: data.currently.windGust,
+                windBearing: data.currently.windBearing,
+                cloudCover: data.currently.cloudCover,
+                visibility: data.currently.visibility,
+              }
+            })
+          })
+          .catch(error => {
+            res.setHeader("Content-Type", "application/json");
+            res.status(500).send({ error })
+          })
+      })
+      //Faraday.get("https://api.darksky.net/forecast/#{ENV['DARKSKY_API_KEY']}/#{lat},#{lng}")
     } else {
       res.setHeader("Content-Type", "application/json");
       res.status(401).send({ error: 'Not Authorized' })
