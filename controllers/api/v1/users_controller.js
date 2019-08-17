@@ -6,7 +6,7 @@ var User = require('../../../models').User;
 
 const createUser = function (req, res, next) {
   let errors = validationResult(req)
-  user = User.findOne({
+  User.findOne({
     where: {
       email: req.body.email
     }
