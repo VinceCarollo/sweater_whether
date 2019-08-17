@@ -3,4 +3,6 @@ const favoritesController = require('../../../../controllers/api/v1/favorites_co
 
 router.post('/', favoritesController.create)
 
+router.get('/', favoritesController.index)
+
 module.exports = router;
