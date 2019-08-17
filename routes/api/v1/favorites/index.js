@@ -5,4 +5,6 @@ router.post('/', favoritesController.create)
 
 router.get('/', favoritesController.index)
 
+router.delete('/', favoritesController.destroy)
+
 module.exports = router;
