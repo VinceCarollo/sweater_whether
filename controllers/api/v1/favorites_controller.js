@@ -80,7 +80,40 @@ var allLocations = async function(req, res, next) {
   }
 }
 
+var deleteLocation = async function(req, res, next) {
+  let user = await User.findOne({
+    where: {
+      api_key: req.body.api_key
+    },
+    include: [{
+      model: Location,
+      as: 'locations'
+    }]
+  })
+  if (user) {
+      Location.destroy({
+      where: {
+        UserId: user.id,
+        name: req.body.location
+      }
+    })
+    .then(rowDeleted => {
+      if (rowDeleted === 1) {
+        res.setHeader("Content-Type", "application/json");
+        res.status(204).send();
+      } else {
+        res.setHeader("Content-Type", "application/json");
+        res.status(500).send({ message: 'Resource Unsuccessfully Deleted' });
+      }
+    })
+  } else {
+    res.setHeader("Content-Type", "application/json");
+    res.status(401).send({ error: 'Not Authorized' })
+  }
+}
+
 module.exports = {
   create: createLocation,
-  index: allLocations
+  index: allLocations,
+  destroy: deleteLocation
 }
